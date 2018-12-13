@@ -1,4 +1,6 @@
 import random
+from pygame import mixer
+import time
 
 def Display_Menu():
     print("""Hello and welcome to hangman. Choose an option:
@@ -19,25 +21,43 @@ def Get_Word():
     check = False
     while check == False:
         word = input("Choose a word")
-
-        if word.isalpha():
-            check = True
-        else:
-            print("Please only enter a-z charactars")
+        for i in range(len(word)-1)):
+            if word.isalpha():
+                check = True
+            else:
+                print("Please only enter a-z charactars")
 
     word = word.lower()
     return(word)
 
-def Choose_Word(words):
-    word = words[random.randint(0,len(words)-1)]
-    return word
+def Choose_Word():
+    WordFile = open("ComputerWords.txt", "r")
+
+    ComputerWords = WordFile.readlines()
+
+    WordFile.close
+
+    for ComputerWord in ComputerWords:
+
+        ComputerWord = list(ComputerWord)
+        if ComputerWord[len(ComputerWord)-1] == '\n':
+            del ComputerWord[len(ComputerWord)-1]
+
+        ComputerWord = "".join(ComputerWord)
+    return ComputerWord
 
 def Make_Blanks(word):
     blank = []
+    list(word)
 
-    for i in range(len(word)):
-        blank.append("*")
-    blank = "".join(blank)
+    for i in range(len(word)-1):
+            if word[i] == " ":
+                word[i] = "/"
+            else:
+                word[i] = "*"
+
+
+
 
     return blank
 
@@ -164,13 +184,16 @@ def Display_Man(Lives):
 
 #main
 
+mixer.init()
+mixer.music.load('Reversed_Eclipse.mp3')
+mixer.music.play(-1)
+
 Display_Menu()
-words = ["computer", "binary", "mouse", "monitor"]
 
 Choice = Get_Choice()
 
 if Choice == "1":
-    word = Choose_Word(words)
+    word = Choose_Word()
 
 elif Choice == "2":
     word = Get_Word()
@@ -199,6 +222,10 @@ while running == True:
     if blanks == word:
         print("You win, The word was " + word)
         running = False
+
+mixer.music.fadeout(3000)
+time.sleep(3)
+mixer.music.stop
 
 
 
